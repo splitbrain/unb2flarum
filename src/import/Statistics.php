@@ -9,14 +9,16 @@ class Statistics extends AbstractImport
 {
     public function import()
     {
-        $this->updateStatistics();
+        $this->updateThreadStatistics();
+        $this->updateCategoryStatistics();
+        $this->updateUserStatistics();
     }
 
-    protected function updateStatistics()
+    protected function updateThreadStatistics()
     {
         $pdo = $this->db->getPDO();
         $flarum = $this->db->getFlarumPrefix();
-        $this->logger->notice('Importing Thread Statistics...');
+        $this->logger->notice('Updating Thread Statistics...');
 
         $sql = "
             UPDATE {$flarum}discussions AS A
@@ -33,4 +35,32 @@ class Statistics extends AbstractImport
         $pdo->exec($sql);
     }
 
+    protected function updateCategoryStatistics()
+    {
+        $pdo = $this->db->getPDO();
+        $flarum = $this->db->getFlarumPrefix();
+        $this->logger->notice('Updating Category Statistics...');
+
+        $sql = "
+            UPDATE {$flarum}tags AS A
+               SET discussion_count = (SELECT COUNT(*) FROM {$flarum}discussion_tag WHERE tag_id = A.id)
+        ";
+
+        $pdo->exec($sql);
+    }
+
+    protected function updateUserStatistics()
+    {
+        $pdo = $this->db->getPDO();
+        $flarum = $this->db->getFlarumPrefix();
+        $this->logger->notice('Updating User Statistics...');
+
+        $sql = "
+            UPDATE {$flarum}users AS A
+               SET discussion_count = (SELECT COUNT(*) FROM {$flarum}discussions WHERE user_id = A.id),
+                   comment_count = (SELECT COUNT(*) FROM {$flarum}posts WHERE user_id = A.id)
+        ";
+
+        $pdo->exec($sql);
+    }
 }

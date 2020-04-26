@@ -10,6 +10,7 @@ use splitbrain\unb2flarum\import\Posts;
 use splitbrain\unb2flarum\import\Statistics;
 use splitbrain\unb2flarum\import\Threads;
 use splitbrain\unb2flarum\import\Users;
+use splitbrain\unb2flarum\import\Watches;
 
 class Cli extends PSR3CLI
 {
@@ -38,9 +39,10 @@ class Cli extends PSR3CLI
         (new Threads($db, $this))->import();
         (new Posts($db, $this))->import();
         (new Statistics($db, $this))->import();
+        (new Watches($db, $this))->import();
 
         $this->success('Imports valid.');
-        if($options->getOpt('test')) {
+        if ($options->getOpt('test')) {
             $this->notice('Skipping database commit.');
         } else {
             $this->notice('Committing to database...');

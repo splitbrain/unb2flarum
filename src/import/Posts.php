@@ -89,6 +89,11 @@ class Posts extends AbstractImport
      */
     protected function parseContent($content)
     {
+        /*
+         * missing:
+         * [align=left][/align]
+         */
+
         return TextFormatter::parse($content);
     }
 

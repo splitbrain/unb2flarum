@@ -14,6 +14,9 @@ class Categories extends AbstractImport
 
     /**
      * Categories are imported as 1st level Tags ordered by the category ID
+     *
+     * Category headers and all nesting is ignored. You need to rearrange your tags manually
+     * after import
      */
     protected function importCategories()
     {
@@ -28,9 +31,10 @@ class Categories extends AbstractImport
                 `Name`,
                 `Name`,
                 `Description`,
-                `ID`
+                `ID`,
+                '#fff'
               FROM {$unb}Forums
-             WHERE Flags = 0
+            WHERE Flags = 0
         ";
 
         $insert = "

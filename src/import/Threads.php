@@ -9,7 +9,7 @@ class Threads extends AbstractImport
     public function import()
     {
         $this->importThreads();
-        $this->assignTags();
+        $this->assignCategories();
     }
 
     /**
@@ -64,7 +64,7 @@ class Threads extends AbstractImport
         }
     }
 
-    protected function assignTags()
+    protected function assignCategories()
     {
         $pdo = $this->db->getPDO();
         $unb = $this->db->getUnbPrefix();
@@ -80,5 +80,4 @@ class Threads extends AbstractImport
 
         $pdo->exec($sql);
     }
-
 }
