@@ -1,0 +1,23 @@
+{
+  "name": "splitbrain/unb2flarum",
+  "description": "Convert an UNB Forum to Flarum",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andreas Gohr",
+      "email": "andi@splitbrain.org"
+    }
+  ],
+  "require": {
+    "s9e/text-formatter": "^2.4",
+    "cocur/slugify": "^4.0",
+    "splitbrain/php-cli": "^1.1",
+    "psr/log": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "splitbrain\\unb2flarum\\": "src"
+    }
+  }
+}
