@@ -43,6 +43,10 @@ class Db {
         return $this->config['flarum'];
     }
 
+    public function getProfileMap() {
+        return $this->config['profile'];
+    }
+
     /**
      * Commit all changes in the transaction
      */

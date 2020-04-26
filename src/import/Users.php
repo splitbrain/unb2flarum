@@ -84,6 +84,52 @@ class Users extends AbstractImport
 
     protected function importProfile()
     {
-        // FIXME todo
+        $pdo = $this->db->getPDO();
+        $unb = $this->db->getUnbPrefix();
+        $flarum = $this->db->getFlarumPrefix();
+
+        // get the configured mapping (masquerade => UNB)
+        $mapconf = $this->db->getProfileMap();
+        if(empty($mapconf)) return;
+
+        $this->logger->notice('Importing Profile Data...');
+
+        // get the defined masquerade fields
+        $sql = "SELECT id, name FROM {$flarum}fof_masquerade_fields";
+        $fields = $pdo->query($sql)->fetchAll();
+
+        // build validated mapping (id => UNB)
+        $map = [];
+        foreach ($fields as list($id, $field)) {
+            if (isset($mapconf[$field])) {
+                $map[$id] = $mapconf[$field];
+            }
+        }
+        if (!count($map)) return;
+
+        // prepare statements
+
+        $fields_u = join(',', array_values($map));
+        $select = "SELECT ID, {$fields_u} FROM {$unb}Users";
+
+        $insert = "
+            INSERT INTO {$flarum}fof_masquerade_answers
+               SET `field_id` = ?,
+                   `user_id` = ?,
+                   `content` = ?,
+                   `created_at` = NOW(),
+                   `updated_at` = NOW()
+            ";
+
+        $result = $pdo->query($select);
+        $sth = $pdo->prepare($insert);
+
+        while ($row = $result->fetch()) {
+            foreach (array_keys($map) as $i => $id) {
+                $content = $row[$i + 1];
+                if (!$content) continue;
+                $sth->execute([$id, $row[0], $content]);
+            }
+        }
     }
 }
