@@ -5,6 +5,7 @@ namespace splitbrain\unb2flarum;
 use splitbrain\phpcli\Options;
 use splitbrain\phpcli\PSR3CLI;
 use splitbrain\unb2flarum\import\Categories;
+use splitbrain\unb2flarum\import\Groups;
 use splitbrain\unb2flarum\import\Posts;
 use splitbrain\unb2flarum\import\Statistics;
 use splitbrain\unb2flarum\import\Threads;
@@ -33,6 +34,7 @@ class Cli extends PSR3CLI
         // run the importers. order does matter!
         (new Categories($db, $this))->import();
         (new Users($db, $this))->import();
+        (new Groups($db, $this))->import();
         (new Threads($db, $this))->import();
         (new Posts($db, $this))->import();
         (new Statistics($db, $this))->import();
