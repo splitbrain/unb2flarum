@@ -8,6 +8,7 @@ use s9e\TextFormatter\Bundles\Forum as TextFormatter;
 
 class Posts extends AbstractImport
 {
+    protected $counter;
 
     public function import()
     {
@@ -45,14 +46,19 @@ class Posts extends AbstractImport
                 `content` = ?,
                 `edited_at` = ?,
                 `edited_user_id` = ?,
-                `ip_address` = ?
+                `ip_address` = ?,
+                `number` = ?
         ";
 
         $result = $pdo->query($select);
         $sth = $pdo->prepare($insert);
 
         while ($row = $result->fetch()) {
+            // transform content from BB code into XML
             $row[5] = $this->parseContent($row[5]);
+            // we need to count the posts
+            $this->counter[$row[1]] = $this->counter[$row[1]] ?? 0;
+            $row[9] = $this->counter[$row[1]]++;
 
             RETRY:
             try {
@@ -67,15 +73,23 @@ class Posts extends AbstractImport
 
                 // this thread failed to import
                 $this->logger->error(
-                    'Poat {id} skipped. {msg}',
+                    'Post {id} skipped. {msg}',
                     ['id' => $row[0], 'msg' => $e->getMessage()]
                 );
             }
         }
     }
 
+    /**
+     * Parse the BBCode into XML
+     *
+     * @param string $content
+     * @return string
+     * @todo check if all formatting is correct
+     */
     protected function parseContent($content)
     {
         return TextFormatter::parse($content);
     }
+
 }

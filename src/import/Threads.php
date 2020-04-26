@@ -9,6 +9,7 @@ class Threads extends AbstractImport
     public function import()
     {
         $this->importThreads();
+        $this->assignTags();
     }
 
     /**
@@ -44,7 +45,7 @@ class Threads extends AbstractImport
         $sth = $pdo->prepare($insert);
 
         while ($row = $result->fetch()) {
-            $row[3] = $this->slugify->slugify($row[3]); // create slug
+            $row[2] = $this->slugify->slugify($row[2]); // create slug
 
             RETRY:
             try {
@@ -62,4 +63,22 @@ class Threads extends AbstractImport
             }
         }
     }
+
+    protected function assignTags()
+    {
+        $pdo = $this->db->getPDO();
+        $unb = $this->db->getUnbPrefix();
+        $flarum = $this->db->getFlarumPrefix();
+        $this->logger->notice('Assigning Thread Categories...');
+
+        $sql = "
+            INSERT INTO {$flarum}discussion_tag
+                (`discussion_id`, `tag_id`)
+            SELECT `ID`, `Forum`
+              FROM {$unb}Threads
+        ";
+
+        $pdo->exec($sql);
+    }
+
 }

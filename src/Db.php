@@ -6,6 +6,13 @@ class Db {
     protected $pdo;
     protected $config;
 
+    /**
+     * Db constructor.
+     *
+     * Creates a transaction
+     *
+     * @param array $config
+     */
     public function __construct($config)
     {
         $this->config = $config;
@@ -36,8 +43,10 @@ class Db {
         return $this->config['flarum'];
     }
 
-
-    public function execute($sql) {
-        $this->pdo->exec($sql);
+    /**
+     * Commit all changes in the transaction
+     */
+    public function commit() {
+        $this->pdo->commit();
     }
 }
